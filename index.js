@@ -1,3 +1,4 @@
+// index.js
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -39,7 +40,6 @@ app.post('/validate', (req, res) => {
   }
 });
 
-// Inicia o servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
