@@ -1,29 +1,45 @@
+const express = require('express');
+const bodyParser = require('body-parser');
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
-  }
+const app = express();
+const PORT = process.env.PORT || 3000;
 
+app.use(bodyParser.json());
+
+app.get('/', (req, res) => {
+  res.send('API MoreItens está Online!');
+});
+
+app.post('/validate', (req, res) => {
   const { license_key, hwid, port, plugin, version } = req.body;
+
+  console.log(`Recebendo validação: Key=${license_key}, HWID=${hwid}`);
 
   if (!license_key || !hwid) {
     return res.status(400).json({ valid: false, message: "Dados incompletos." });
   }
 
-  const isKeyValid = (license_key === "ADMIN-123");
+  const validKeys = ["ADMIN-123", "CLIENTE-VIP-01"];
+  
+  const isKeyValid = validKeys.includes(license_key);
 
   if (isKeyValid) {
-    const sessionToken = Buffer.from(`${hwid}-AUTORIZADO-2024`).toString('base64');
+    const sessionToken = Buffer.from(`${hwid}-AUTORIZADO-SERVER`).toString('base64');
 
     return res.status(200).json({
       valid: true,
       token: sessionToken,
-      message: "Licença ativa e autorizada."
+      message: "Licença ativa."
     });
   } else {
     return res.status(403).json({
       valid: false,
-      message: "Licença inválida ou bloqueada."
+      message: "Licença inválida."
     });
   }
-}
+});
+
+// Inicia o servidor
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
